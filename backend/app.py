@@ -60,6 +60,8 @@ async def simplify_text(text: str = Body(..., embed=True)):
 @app.post("/add-content/")
 async def add_content(text: str = Form(...)):
     try:
+        if db is None:
+            return {"error": "Firebase serviceAccountKey.json is missing on backend."}
         doc_ref = db.collection("content").add({"text": text})
         return {"id": doc_ref.id}
     except Exception as e:
@@ -68,6 +70,8 @@ async def add_content(text: str = Form(...)):
 @app.get("/get-content/")
 async def get_content():
     try:
+        if db is None:
+            return {"content": [], "warning": "Firebase serviceAccountKey.json is missing on backend."}
         content = []
         docs = db.collection("content").stream()
         for doc in docs:
